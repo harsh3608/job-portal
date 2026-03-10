@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using CandidateService.Data;
 using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -26,6 +30,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseSerilogRequestLogging();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
