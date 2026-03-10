@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/api-gateway/">
+    <Project Path="api-gateway/ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/application-service/">
+    <Project Path="application-service/ApplicationService.csproj" />
+  </Folder>
+  <Folder Name="/auth-service/">
+    <Project Path="auth-service/AuthService.csproj" />
+  </Folder>
+  <Folder Name="/candidate-service/">
+    <Project Path="candidate-service/CandidateService.csproj" />
+  </Folder>
+  <Folder Name="/employer-service/">
+    <Project Path="employer-service/EmployerService.csproj" />
+  </Folder>
+  <Folder Name="/job-service/">
+    <Project Path="job-service/JobService.csproj" />
+  </Folder>
+  <Folder Name="/resume-search-service/">
+    <Project Path="resume-search-service/ResumeSearchService.csproj" />
+  </Folder>
+</Solution>

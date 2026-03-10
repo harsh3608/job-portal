@@ -1,0 +1,180 @@
+version: "3.9"
+
+services:
+
+  # ── API Gateway ──────────────────────────────────────────────
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "5000:8080"
+    depends_on:
+      - auth-service
+      - candidate-service
+      - employer-service
+      - job-service
+      - application-service
+      - resume-search-service
+    networks:
+      - jobportal-network
+
+  # ── Auth Service ─────────────────────────────────────────────
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__AuthDb=Server=sqlserver;Database=AuthDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
+      - Jwt__Key=SuperSecretKey_ChangeThisInProduction_12345!
+      - Jwt__Issuer=JobPortal
+      - Jwt__Audience=JobPortalUsers
+    depends_on:
+      - sqlserver
+    networks:
+      - jobportal-network
+
+  # ── Candidate Service ─────────────────────────────────────────
+  candidate-service:
+    build:
+      context: ./candidate-service
+      dockerfile: Dockerfile
+    container_name: candidate-service
+    ports:
+      - "5002:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__CandidateDb=Server=sqlserver;Database=CandidateDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - jobportal-network
+
+  # ── Employer Service ─────────────────────────────────────────
+  employer-service:
+    build:
+      context: ./employer-service
+      dockerfile: Dockerfile
+    container_name: employer-service
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__EmployerDb=Server=sqlserver;Database=EmployerDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - jobportal-network
+
+  # ── Job Service ──────────────────────────────────────────────
+  job-service:
+    build:
+      context: ./job-service
+      dockerfile: Dockerfile
+    container_name: job-service
+    ports:
+      - "5004:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__JobDb=Server=sqlserver;Database=JobDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
+      - ConnectionStrings__Redis=redis:6379
+    depends_on:
+      - sqlserver
+      - redis
+    networks:
+      - jobportal-network
+
+  # ── Application Service ───────────────────────────────────────
+  application-service:
+    build:
+      context: ./application-service
+      dockerfile: Dockerfile
+    container_name: application-service
+    ports:
+      - "5005:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__ApplicationDb=Server=sqlserver;Database=ApplicationDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    networks:
+      - jobportal-network
+
+  # ── Resume Search Service ─────────────────────────────────────
+  resume-search-service:
+    build:
+      context: ./resume-search-service
+      dockerfile: Dockerfile
+    container_name: resume-search-service
+    ports:
+      - "5006:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Elasticsearch__Url=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - jobportal-network
+
+  # ── Infrastructure ────────────────────────────────────────────
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - jobportal-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - jobportal-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI (guest/guest)
+    networks:
+      - jobportal-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - jobportal-network
+
+volumes:
+  sqlserver-data:
+  es-data:
+
+networks:
+  jobportal-network:
+    driver: bridge
