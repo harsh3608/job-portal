@@ -6,14 +6,18 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// Elasticsearch client (singleton)
-var esUrl = builder.Configuration["Elasticsearch:Url"] ?? "http://elasticsearch:9200";
+// Elasticsearch: Aspire injects ConnectionStrings:elasticsearch; fall back to custom key for docker-compose
+var esUrl = builder.Configuration.GetConnectionString("elasticsearch")
+    ?? builder.Configuration["Elasticsearch:Url"]
+    ?? "http://elasticsearch:9200";
 var settings = new ElasticsearchClientSettings(new Uri(esUrl))
     .DefaultIndex("resumes")
     .ServerCertificateValidationCallback(CertificateValidations.AllowAll);
@@ -39,4 +43,5 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 app.UseAuthorization();
 app.MapControllers();
+app.MapDefaultEndpoints();
 app.Run();

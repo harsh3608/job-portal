@@ -1,0 +1,29 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.1.2">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>d953203e-d608-4670-86bb-4251ffae969e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.1.2" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.2" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.1.2" />
+    <PackageReference Include="Aspire.Hosting.Elasticsearch" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.NodeJs" Version="9.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../api-gateway/ApiGateway.csproj" />
+    <ProjectReference Include="../auth-service/AuthService.csproj" />
+    <ProjectReference Include="../candidate-service/CandidateService.csproj" />
+    <ProjectReference Include="../employer-service/EmployerService.csproj" />
+    <ProjectReference Include="../job-service/JobService.csproj" />
+    <ProjectReference Include="../application-service/ApplicationService.csproj" />
+    <ProjectReference Include="../resume-search-service/ResumeSearchService.csproj" />
+  </ItemGroup>
+
+</Project>

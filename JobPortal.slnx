@@ -20,4 +20,10 @@
   <Folder Name="/resume-search-service/">
     <Project Path="resume-search-service/ResumeSearchService.csproj" />
   </Folder>
+  <Folder Name="/JobPortal.AppHost/">
+    <Project Path="JobPortal.AppHost/JobPortal.AppHost.csproj" />
+  </Folder>
+  <Folder Name="/JobPortal.ServiceDefaults/">
+    <Project Path="JobPortal.ServiceDefaults/JobPortal.ServiceDefaults.csproj" />
+  </Folder>
 </Solution>

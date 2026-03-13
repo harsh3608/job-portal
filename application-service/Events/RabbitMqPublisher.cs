@@ -16,13 +16,25 @@ public sealed class RabbitMqPublisher : IDisposable
 
     public RabbitMqPublisher(IConfiguration config)
     {
-        var factory = new ConnectionFactory
+        // Aspire injects an AMQP URI as ConnectionStrings:rabbitmq;
+        // fall back to individual settings for docker-compose compatibility.
+        var connectionString = config.GetConnectionString("rabbitmq");
+        ConnectionFactory factory;
+
+        if (!string.IsNullOrEmpty(connectionString))
         {
-            HostName = config["RabbitMq:Host"] ?? "rabbitmq",
-            Port = int.Parse(config["RabbitMq:Port"] ?? "5672"),
-            UserName = config["RabbitMq:Username"] ?? "guest",
-            Password = config["RabbitMq:Password"] ?? "guest"
-        };
+            factory = new ConnectionFactory { Uri = new Uri(connectionString) };
+        }
+        else
+        {
+            factory = new ConnectionFactory
+            {
+                HostName = config["RabbitMq:Host"] ?? "rabbitmq",
+                Port = int.Parse(config["RabbitMq:Port"] ?? "5672"),
+                UserName = config["RabbitMq:Username"] ?? "guest",
+                Password = config["RabbitMq:Password"] ?? "guest"
+            };
+        }
 
         // Use synchronous creation for simplicity; production code should use async
         _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
