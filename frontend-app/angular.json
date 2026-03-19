@@ -31,7 +31,8 @@
             ],
             "styles": [
               "node_modules/primeflex/primeflex.min.css",
-              "src/assets/styles.scss"
+              "src/assets/styles.scss",
+              "src/styles.scss"
             ]
           },
           "configurations": {
