@@ -26,6 +26,16 @@ public static class Extensions
 
         builder.Services.AddServiceDiscovery();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            });
+        });
+
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
             // Turn on resilience by default

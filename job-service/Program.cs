@@ -40,6 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseSerilogRequestLogging();
+app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
 app.MapDefaultEndpoints();
